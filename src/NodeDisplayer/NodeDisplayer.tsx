@@ -253,6 +253,13 @@ function startRendering(
       };
 
       ctx.beginPath();
+      if (
+        succ.nodeData.predecessor &&
+        succ.nodeData.predecessor === nodeData.id
+      )
+        ctx.lineWidth = 2;
+      else ctx.lineWidth = 1;
+
       drawArrow(posCenter.x, posCenter.y, arrow.x, arrow.y);
       ctx.closePath();
 
