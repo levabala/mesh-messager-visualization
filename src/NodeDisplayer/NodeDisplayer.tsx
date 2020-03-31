@@ -92,7 +92,7 @@ function startRendering(
           const n1 = node.nodeData;
           const n2 = node2.nodeData;
 
-          const areConnected = n1.successor === n2.id;
+          const areConnected = n1.successor === n2.id || n2.successor === n1.id;
 
           const offset = getOffset(node.pos, node2.pos);
           const dist = getDistance(offset);
