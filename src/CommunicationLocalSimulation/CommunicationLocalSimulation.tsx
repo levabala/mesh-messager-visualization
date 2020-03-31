@@ -19,6 +19,30 @@ window.onkeypress = async (event: KeyboardEvent) => {
   }
 };
 
+(window as any).clearNodes = () => {
+  Object.values(connectedNodes).forEach(node => {
+    node.stopLifecycle();
+    delete connectedNodes[node.id.toString()];
+  });
+};
+(window as any).getNode = (id: string) => connectedNodes[id];
+(window as any).getFingers = (id: string) => connectedNodes[id].fingers;
+(window as any).kickNode = (id: string) => {
+  const node = connectedNodes[id];
+  node.stopLifecycle();
+
+  delete connectedNodes[id];
+};
+(window as any).addNode = (id: string, to: string = id) => {
+  const node = new Node(communicationLocal, BigInt(id), BigInt(to));
+
+  if (id !== to) node.joinNode(BigInt(to));
+
+  connectedNodes[id] = node;
+
+  node.startLifecycle();
+};
+
 (async () => {
   const rootNode = new Node(communicationLocal).setLogging(false);
   addNode(rootNode);
@@ -27,11 +51,10 @@ window.onkeypress = async (event: KeyboardEvent) => {
   await Promise.all(
     new Array(10).fill(null).map(async (_, i) => {
       await new Promise(res => setTimeout(() => res(), delay * i));
-      addSomeNode();
+      const n = await addSomeNode();
+      n.startLifecycle();
     })
   );
-
-  Object.values(connectedNodes).map(node => node.startLifecycle());
 
   console.log("firstly connectedNodes:", Object.keys(connectedNodes).length);
 
